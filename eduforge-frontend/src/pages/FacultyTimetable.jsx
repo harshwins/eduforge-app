@@ -1,6 +1,6 @@
 // src/pages/FacultyTimetable.jsx
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../api';
 
 export default function FacultyTimetable() {
   const facultyId = Number(localStorage.getItem('userId'));
@@ -18,7 +18,7 @@ export default function FacultyTimetable() {
 
   // load all slots
   const loadSlots = () => {
-    axios
+    API
       .get(`http://localhost:8080/api/faculty/timetable?facultyId=${facultyId}`)
       .then(res => setSlots(res.data))
       .catch(console.error);
@@ -30,7 +30,7 @@ export default function FacultyTimetable() {
   const handleAdd = async e => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8080/api/faculty/timetable', {
+      await API.post('http://localhost:8080/api/faculty/timetable', {
         dayOfWeek,
         slot,
         startTime,   // must be "HH:mm"
@@ -164,7 +164,7 @@ export default function FacultyTimetable() {
                 <td className="p-3">
                   <button
                     onClick={() => {
-                      axios
+                      API
                         .delete(`http://localhost:8080/api/faculty/timetable/${s.id}`)
                         .then(loadSlots);
                     }}

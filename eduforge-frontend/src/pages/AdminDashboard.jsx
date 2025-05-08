@@ -1,7 +1,7 @@
 // src/pages/AdminDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../api';
 
 export default function AdminDashboard() {
   const [students, setStudents]       = useState([]);
@@ -13,7 +13,7 @@ export default function AdminDashboard() {
   // 1) Fetch existing students
   const fetchStudents = async () => {
     try {
-      const { data } = await axios.get('http://localhost:8080/api/admin/students');
+      const { data } = await API.get('http://localhost:8080/api/admin/students');
       setStudents(data);
     } catch (err) {
       console.error('Failed to load students', err);
@@ -28,7 +28,7 @@ export default function AdminDashboard() {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8080/api/admin/students', {
+      await API.post('http://localhost:8080/api/admin/students', {
         name: newName,
         email: newEmail,
         password: newPassword,
@@ -47,7 +47,7 @@ export default function AdminDashboard() {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this student?')) return;
     try {
-      await axios.delete(`http://localhost:8080/api/admin/students/${id}`);
+      await API.delete(`http://localhost:8080/api/admin/students/${id}`);
       setStudents(students.filter(s => s.id !== id));
     } catch (err) {
       console.error('Delete student error', err);

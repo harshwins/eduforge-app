@@ -1,6 +1,6 @@
 // src/pages/ManageEvents.jsx
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../api';
 
 export default function ManageEvents() {
   const [events, setEvents]         = useState([]);
@@ -19,7 +19,7 @@ export default function ManageEvents() {
 
   const fetchEvents = async () => {
     try {
-      const { data } = await axios.get('http://localhost:8080/api/events');
+      const { data } = await API.get('http://localhost:8080/api/events');
       setEvents(data);
     } catch (err) {
       console.error('Failed to load events', err);
@@ -39,7 +39,7 @@ export default function ManageEvents() {
         fee: paid ? parseInt(fee, 10) * 100 : 0,
         createdByFacultyId: facultyId,
       };
-      await axios.post('http://localhost:8080/api/admin/events', payload);
+      await API.post('http://localhost:8080/api/admin/events', payload);
       // clear form & refresh
       setTitle('');
       setDescription('');
@@ -57,7 +57,7 @@ export default function ManageEvents() {
   const handleDelete = async (id) => {
     if (!window.confirm('Remove this event?')) return;
     try {
-      await axios.delete(`http://localhost:8080/api/admin/events/${id}`);
+      await API.delete(`http://localhost:8080/api/admin/events/${id}`);
       fetchEvents();
     } catch (err) {
       console.error('Delete failed', err);

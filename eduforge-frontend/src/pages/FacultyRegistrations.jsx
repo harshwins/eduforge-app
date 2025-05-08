@@ -1,6 +1,6 @@
 // src/pages/FacultyRegistrations.jsx
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import API from '../api';
 
 export default function FacultyRegistrations() {
   const facultyId = localStorage.getItem('userId')
@@ -17,7 +17,7 @@ export default function FacultyRegistrations() {
 
     if (activeTab === 'pending') {
       console.log('👉 fetching pending for', facultyId)
-      axios
+      API
         .get(
           `http://localhost:8080/api/faculty/registrations/pending?facultyId=${facultyId}`
         )
@@ -28,7 +28,7 @@ export default function FacultyRegistrations() {
         .catch(err => console.error('pending err', err))
     } else {
       console.log('👉 fetching events for', facultyId)
-      axios
+      API
         .get(`http://localhost:8080/api/faculty/events?facultyId=${facultyId}`)
         .then(r => {
           console.log('events data', r.data)
@@ -41,7 +41,7 @@ export default function FacultyRegistrations() {
   const loadRegs = (eventId) => {
     setSelected(eventId)
     console.log('👉 loading regs for event', eventId)
-    axios
+    API
       .get(`http://localhost:8080/api/faculty/events/${eventId}/registrations`)
       .then(r => {
         console.log('regs data', r.data)
@@ -51,7 +51,7 @@ export default function FacultyRegistrations() {
   }
 
   const decide = (regId, accept) => {
-    axios
+    API
       .patch(
         `http://localhost:8080/api/faculty/registrations/${regId}?accept=${accept}`
       )

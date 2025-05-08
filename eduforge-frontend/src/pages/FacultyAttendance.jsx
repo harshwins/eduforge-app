@@ -1,7 +1,7 @@
 // src/pages/FacultyAttendance.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import API from '../api';
 
 export default function FacultyAttendance() {
   const { lectureId } = useParams();
@@ -18,7 +18,7 @@ export default function FacultyAttendance() {
       setLoading(false);
       return;
     }
-    axios
+    API
       .get(`http://localhost:8080/api/faculty/${facultyId}/attendance/${lectureId}/roster`)
       .then(res => { setRoster(res.data); setError(null); })
       .catch(() => setError('Failed to load roster.'))
@@ -31,7 +31,7 @@ export default function FacultyAttendance() {
     // all marked → save
     const finish = async () => {
       try {
-        await axios.post(
+        await API.post(
           `http://localhost:8080/api/faculty/${facultyId}/attendance/${lectureId}`,
           records
         );

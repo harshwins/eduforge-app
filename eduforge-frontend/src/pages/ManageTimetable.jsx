@@ -1,7 +1,7 @@
 // src/pages/ManageTimetable.jsx
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import axios from 'axios'
+import API from '../api';
 
 export default function ManageTimetable() {
   const facultyId = Number(localStorage.getItem('userId'))
@@ -24,7 +24,7 @@ export default function ManageTimetable() {
   const fetchSlots = () => {
     setLoading(true)
     setError(null)
-    axios.get('/api/faculty/timetable', { params: { facultyId } })
+    API.get('/faculty/timetable', { params: { facultyId } })
       .then(res => setSlots(res.data))
       .catch(() => setError('Failed to load timetable.'))
       .finally(() => setLoading(false))
@@ -52,7 +52,7 @@ export default function ManageTimetable() {
         // semester: { id: YOUR_SEMESTER_ID },
       }
 
-      await axios.post('/api/faculty/timetable', payload)
+      await API.post('/faculty/timetable', payload)
       setForm({
         dayOfWeek: 'Monday',
         slot: 1,
@@ -70,7 +70,7 @@ export default function ManageTimetable() {
   const handleDelete = async id => {
     setError(null)
     try {
-      await axios.delete(`/api/faculty/timetable/${id}`)
+      await API.delete(`/faculty/timetable/${id}`)
       fetchSlots()
     } catch {
       setError('Failed to delete slot.')

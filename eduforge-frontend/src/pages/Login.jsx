@@ -1,7 +1,7 @@
 // src/pages/Login.jsx
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import API from '../api';
 
 export default function Login() {
   const [email, setEmail]       = useState('')
@@ -17,7 +17,7 @@ export default function Login() {
     setLoading(true)
     try {
       // this goes to /api/login via your Vite proxy → Spring Boot at 8080
-      const res = await axios.post('/api/login', { email, password })
+      const res = await API.post('/api/auth/login', { email, password })
       const { userId, role, name } = res.data
 
       // persist and redirect by role

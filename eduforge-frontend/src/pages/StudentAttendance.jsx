@@ -1,13 +1,13 @@
 // src/pages/StudentAttendance.jsx
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import API from '../api';
 
 export default function StudentAttendance() {
   const studentId = Number(localStorage.getItem('userId'))
   const [rows, setRows] = useState([])
 
   useEffect(() => {
-    axios
+    API
       .get(`http://localhost:8080/api/students/${studentId}/attendance`)
       .then(r => setRows(r.data.attendance))
       .catch(console.error)

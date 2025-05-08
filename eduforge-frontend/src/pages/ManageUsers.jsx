@@ -1,6 +1,6 @@
 // src/pages/ManageUsers.jsx
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../api';
 
 export default function ManageUsers() {
   // plain JS state, no <> generics
@@ -17,7 +17,7 @@ export default function ManageUsers() {
         const path = activeTab === 'students'
           ? '/api/admin/students'
           : '/api/admin/faculty';
-        const { data } = await axios.get(`http://localhost:8080${path}`);
+        const { data } = await API.get(`http://localhost:8080${path}`);
         setUsers(data);
       } catch (err) {
         console.error('Failed to load', err);
@@ -32,10 +32,10 @@ export default function ManageUsers() {
       const path = activeTab === 'students'
         ? '/api/admin/students'
         : '/api/admin/faculty';
-      await axios.post(`http://localhost:8080${path}`, { name, email, password });
+      await API.post(`http://localhost:8080${path}`, { name, email, password });
       setName(''); setEmail(''); setPassword('');
       // refetch
-      const { data } = await axios.get(`http://localhost:8080${path}`);
+      const { data } = await API.get(`http://localhost:8080${path}`);
       setUsers(data);
     } catch (err) {
       console.error('Create failed', err);
@@ -49,7 +49,7 @@ export default function ManageUsers() {
       const path = activeTab === 'students'
         ? '/api/admin/students'
         : '/api/admin/faculty';
-      await axios.delete(`http://localhost:8080${path}/${id}`);
+      await API.delete(`http://localhost:8080${path}/${id}`);
       setUsers(users.filter(u => u.id !== id));
     } catch (err) {
       console.error('Delete failed', err);

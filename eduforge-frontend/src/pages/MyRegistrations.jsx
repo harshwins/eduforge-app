@@ -1,13 +1,13 @@
 // src/pages/MyRegistrations.jsx
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import API from '../api';
 
 export default function MyRegistrations() {
   const [regs, setRegs] = useState([])
   const studentId = /* your logged-in id */ 6
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/students/${studentId}/registrations`)
+    API.get(`http://localhost:8080/api/students/${studentId}/registrations`)
       .then(res => setRegs(res.data))
       .catch(console.error)
   }, [])

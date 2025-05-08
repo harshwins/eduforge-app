@@ -1,6 +1,6 @@
 // src/pages/Attendance.jsx
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import API from '../api';
 
 export default function Attendance() {
   const studentId = localStorage.getItem('userId')
@@ -18,7 +18,7 @@ export default function Attendance() {
     setLoading(true)
     setError(null)
 
-    axios
+    API
       .get(`http://localhost:8080/api/students/${studentId}/attendance`)
       .then(({ data }) => {
         if (Array.isArray(data.attendance)) {

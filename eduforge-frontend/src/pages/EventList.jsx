@@ -1,19 +1,19 @@
 // src/pages/EventsList.jsx
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import API from '../api';
 
 export default function EventsList() {
   const [events, setEvents] = useState([])
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/events')
+    API.get('http://localhost:8080/api/events')
       .then(res => setEvents(res.data))
       .catch(console.error)
   }, [])
 
   const register = async (id, paid) => {
     const studentId = /* get from your auth/session */ 6
-    await axios.post(`http://localhost:8080/api/events/${id}/register`, { studentId, paid })
+    await API.post(`http://localhost:8080/api/events/${id}/register`, { studentId, paid })
     alert('Registered!')
   }
 
