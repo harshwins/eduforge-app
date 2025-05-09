@@ -24,7 +24,7 @@ export default function ManageTimetable() {
   const fetchSlots = () => {
     setLoading(true)
     setError(null)
-    API.get('/faculty/timetable', { params: { facultyId } })
+    API.post('/faculty/timetable', { params: { facultyId } })
       .then(res => setSlots(res.data))
       .catch(() => setError('Failed to load timetable.'))
       .finally(() => setLoading(false))
