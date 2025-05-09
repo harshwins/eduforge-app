@@ -1,0 +1,12 @@
+# Java
+/target/
+*.class
+
+# IDE
+/.idea/
+*.iml
+
+# Node/Vite
+/node_modules/
+/dist/
+.env.local
