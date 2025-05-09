@@ -13,33 +13,45 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:5173")   // allow your Vite dev server
+@RequestMapping("/api/faculty")
+@CrossOrigin(origins = "http://localhost:5173")
 public class LectureScheduleController {
 
     private final LectureScheduleRepository lectureRepo;
-    private final UserRepository             userRepo;
+    private final UserRepository            userRepo;
 
     @Autowired
-    public LectureScheduleController(LectureScheduleRepository lectureRepo,
-                                     UserRepository userRepo) {
+    public LectureScheduleController(
+        LectureScheduleRepository lectureRepo,
+        UserRepository userRepo
+    ) {
         this.lectureRepo = lectureRepo;
         this.userRepo    = userRepo;
     }
 
-    /** Faculty: list your lectures */
-    @GetMapping("/faculty/timetable")
-    public List<LectureSchedule> getMyLectures(@RequestParam("facultyId") Integer facultyId) {
+    /** 
+     * GET /api/faculty/timetable?facultyId={id} 
+     * List all lectures for that faculty 
+     */
+    @GetMapping("/timetable")
+    public List<LectureSchedule> getMyLectures(
+        @RequestParam("facultyId") Integer facultyId
+    ) {
         userRepo.findById(facultyId)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Faculty not found: " + facultyId));
         return lectureRepo.findByFaculty_Id(facultyId);
     }
 
-    /** Faculty: add a new lecture slot */
-    @PostMapping("/faculty/timetable")
-    public LectureSchedule addLecture(@RequestBody LectureSchedule input) {
-        // verify faculty exists
+    /** 
+     * POST /api/faculty/timetable 
+     * Add a new lecture slot (body must include faculty.id, batch.id, subject, startTime, etc.)
+     */
+    @PostMapping("/timetable")
+    @ResponseStatus(HttpStatus.CREATED)
+    public LectureSchedule addLecture(
+        @RequestBody LectureSchedule input
+    ) {
         Integer fid = input.getFaculty().getId();
         userRepo.findById(fid)
             .orElseThrow(() -> new ResponseStatusException(
@@ -47,8 +59,11 @@ public class LectureScheduleController {
         return lectureRepo.save(input);
     }
 
-    /** Faculty: delete a lecture slot */
-    @DeleteMapping("/faculty/timetable/{id}")
+    /** 
+     * DELETE /api/faculty/timetable/{id} 
+     * Remove a lecture slot 
+     */
+    @DeleteMapping("/timetable/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLecture(@PathVariable Integer id) {
         if (!lectureRepo.existsById(id)) {
@@ -56,21 +71,5 @@ public class LectureScheduleController {
                 HttpStatus.NOT_FOUND, "Lecture not found: " + id);
         }
         lectureRepo.deleteById(id);
-    }
-
-    /** Student: list your batch’s lectures */
-    @GetMapping("/students/{studentId}/timetable")
-    public List<LectureSchedule> getStudentTimetable(@PathVariable Integer studentId) {
-        User student = userRepo.findById(studentId)
-            .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Student not found: " + studentId));
-        Integer batchId = student.getBatch() != null
-                            ? student.getBatch().getId()
-                            : null;
-        if (batchId == null) {
-            throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST, "Student has no batch assigned");
-        }
-        return lectureRepo.findByBatch_Id(batchId);
     }
 }

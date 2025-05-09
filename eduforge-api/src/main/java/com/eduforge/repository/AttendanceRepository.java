@@ -1,10 +1,11 @@
-// src/main/java/com/eduforge/repository/AttendanceRepository.java
 package com.eduforge.repository;
 
 import com.eduforge.model.Attendance;
+import com.eduforge.dto.AttendanceSummaryDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Integer> {
 
@@ -32,7 +33,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
         WHERE a.student_id = :studentId
         GROUP BY l.subject, sem.name
         """, nativeQuery = true)
-    List<Object[]> getAttendanceSummaryByStudent(Integer studentId);
+    List<Object[]> getAttendanceSummaryByStudentRaw(Integer studentId);
 
     @Query(value = """
         SELECT u.id, u.name, l.subject,
@@ -58,5 +59,32 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
         WHERE l.batch_id = :batchId
         GROUP BY u.id, u.name, l.subject
         """, nativeQuery = true)
-    List<Object[]> getBatchAttendanceSummary(Integer batchId);
+    List<Object[]> getBatchAttendanceSummaryRaw(Integer batchId);
+
+    // Default helper to map raw rows into DTOs
+    default List<AttendanceSummaryDto> getAttendanceSummaryByStudent(Integer studentId) {
+        return getAttendanceSummaryByStudentRaw(studentId).stream()
+            .map(row -> new AttendanceSummaryDto(
+                (String) row[0],               // subject
+                (String) row[1],               // semester
+                ((Number) row[2]).longValue(), // attended
+                ((Number) row[3]).longValue(), // total
+                ((Number) row[4]).doubleValue(),// percent
+                (String) row[5]                // status
+            ))
+            .collect(Collectors.toList());
+    }
+
+    default List<AttendanceSummaryDto> getBatchAttendanceSummaryDto(Integer batchId) {
+        return getBatchAttendanceSummaryRaw(batchId).stream()
+            .map(row -> new AttendanceSummaryDto(
+                (String) row[2],               // subject (row[2] here)
+                (String) row[1],               // semester (row[1] here)
+                ((Number) row[3]).longValue(),
+                ((Number) row[4]).longValue(),
+                ((Number) row[5]).doubleValue(),
+                (String) row[6]
+            ))
+            .collect(Collectors.toList());
+    }
 }
