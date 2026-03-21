@@ -1,9 +1,15 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './index.html',        // your Vite entrypoint
-    './src/**/*.{js,jsx}', // every React file under src/
+    "./index.html",
+    "./src/**/*.{js,jsx}",
   ],
-  theme: { extend: {} },
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ["Inter", "ui-sans-serif", "system-ui"],
+      },
+    },
+  },
   plugins: [],
 };

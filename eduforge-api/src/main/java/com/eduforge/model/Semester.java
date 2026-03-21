@@ -1,5 +1,6 @@
 package com.eduforge.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -19,10 +20,12 @@ public class Semester {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
-    @OneToMany(mappedBy = "semester")
-    private List<LectureSchedule> lectureSchedules;
+   @OneToMany(mappedBy = "semester")
+   @JsonIgnore
+private List<TimetableEntry> timetableEntries;
 
     @OneToMany(mappedBy = "semester")
+    @JsonIgnore
     private List<SemesterPolicy> policies;
 
     public Semester() {}
@@ -39,8 +42,10 @@ public class Semester {
     public LocalDate getEndDate() { return endDate; }
     public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
 
-    public List<LectureSchedule> getLectureSchedules() { return lectureSchedules; }
-    public void setLectureSchedules(List<LectureSchedule> lectureSchedules) { this.lectureSchedules = lectureSchedules; }
+ public List<TimetableEntry> getTimetableEntries() { return timetableEntries; }
+public void setTimetableEntries(List<TimetableEntry> timetableEntries) {
+    this.timetableEntries = timetableEntries;
+}
 
     public List<SemesterPolicy> getPolicies() { return policies; }
     public void setPolicies(List<SemesterPolicy> policies) { this.policies = policies; }

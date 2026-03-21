@@ -13,7 +13,7 @@ export default function AdminDashboard() {
   // 1) Fetch existing students
   const fetchStudents = async () => {
     try {
-      const { data } = await API.get('http://localhost:8080/api/admin/students');
+      const { data } = await API.get(`http://localhost:8080/api/admin/students`);
       setStudents(data);
     } catch (err) {
       console.error('Failed to load students', err);
@@ -28,7 +28,7 @@ export default function AdminDashboard() {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      await API.post('http://localhost:8080/api/admin/students', {
+      await API.post(`http://localhost:8080/api/admin/students`, {
         name: newName,
         email: newEmail,
         password: newPassword,

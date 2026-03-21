@@ -1,20 +1,24 @@
 package com.eduforge.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "event_registrations")
 public class EventRegistration {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "event_id", nullable = false)
+    @JsonIgnoreProperties({"registrations", "createdBy"}) // Prevent deep recursion
     private Event event;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "student_id", nullable = false)
+    @JsonIgnoreProperties({"registrations", "attendances", "lectures", "batch", "password"})
     private User student;
 
     private boolean paid;

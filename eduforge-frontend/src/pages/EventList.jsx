@@ -6,7 +6,7 @@ export default function EventsList() {
   const [events, setEvents] = useState([])
 
   useEffect(() => {
-    API.get('http://localhost:8080/api/events')
+    API.get(`http://localhost:8080/api/events`)
       .then(res => setEvents(res.data))
       .catch(console.error)
   }, [])

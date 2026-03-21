@@ -1,24 +1,35 @@
 package com.eduforge.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "batch")
 public class Batch {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
+    // ---------- STUDENTS IN THIS BATCH ----------
+
     @OneToMany(mappedBy = "batch")
+    @JsonIgnore
     private List<User> students;
 
+    // ---------- TIMETABLE ENTRIES FOR THIS BATCH ----------
+
     @OneToMany(mappedBy = "batch")
-    private List<LectureSchedule> lectureSchedules;
+    @JsonIgnore
+    private List<TimetableEntry> timetableEntries;
 
     public Batch() {}
+
+    // ---------- GETTERS / SETTERS ----------
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
@@ -29,8 +40,8 @@ public class Batch {
     public List<User> getStudents() { return students; }
     public void setStudents(List<User> students) { this.students = students; }
 
-    public List<LectureSchedule> getLectureSchedules() { return lectureSchedules; }
-    public void setLectureSchedules(List<LectureSchedule> lectureSchedules) {
-        this.lectureSchedules = lectureSchedules;
+    public List<TimetableEntry> getTimetableEntries() { return timetableEntries; }
+    public void setTimetableEntries(List<TimetableEntry> timetableEntries) {
+        this.timetableEntries = timetableEntries;
     }
 }

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import AvatarUploader from '../components/AvatarUploader.jsx';
-
+import logo from "../assets/EF.png"
 export default function FacultyLayout() {
   const nav = useNavigate();
   const userId = localStorage.getItem('userId');
@@ -16,30 +16,49 @@ export default function FacultyLayout() {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex rounded min-h-screen">
       {/* Sidebar */}
-      <aside className="w-64 bg-orange-600 text-white flex flex-col">
+      <aside className="w-64 bg-orange-600 rounded text-white flex flex-col">
         {/* Header with title + avatar */}
-        <div className="px-6 py-4 border-b border-orange-700 flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Edu Forge</h1>
+        <div className="pl-1 pr-4 py-4 border-b rounded border-orange-100 flex items-start justify-between">
+
+          {/* LEFT — Logo + Title */}
+          <div className="flex items-start gap-0">
+
+            {/* Logo — pushed far left */}
+            <img
+              src={logo}
+              alt="EduForge Logo"
+              className="h-11 select-none rounded"
+              draggable="false"
+            />
+
+            {/* Title — slightly lower */}
+            <h1 className="text-[25px] font-semibold mt-1 -ml-1">
+              EduForge
+            </h1>
+
+          </div>
+
+          {/* RIGHT — Avatar */}
           <AvatarUploader
             userId={userId}
             initialUrl={avatarUrl}
             onUpload={handleAvatarChange}
-            className="w-12 h-12 rounded-full overflow-hidden border-2 border-white"
+            className="w-11 h-11 rounded-full overflow-hidden border-2 border-green-500"
           />
+
         </div>
 
         {/* Nav links */}
-        <nav className="flex-1 px-6 py-4 space-y-2">
+        <nav className="flex-1 px-4 py-4 rounded space-y-2">
           <NavLink
             to=""
             end
             className={({ isActive }) =>
-              `block px-4 py-2 rounded ${
-                isActive
-                  ? 'bg-white text-orange-600'
-                  : 'hover:bg-orange-700 text-white'
+              `block px-4 py-2 font-light rounded transition-all duration-400 ease-out ${isActive
+                ? 'bg-white text-orange-600'
+                : 'hover:bg-orange-700 text-white'
               }`
             }
           >
@@ -49,10 +68,9 @@ export default function FacultyLayout() {
           <NavLink
             to="pending"
             className={({ isActive }) =>
-              `block px-4 py-2 rounded ${
-                isActive
-                  ? 'bg-white text-orange-600'
-                  : 'hover:bg-orange-700 text-white'
+              `block px-4 py-2 font-light rounded transition-all duration-400 ease-out ${isActive
+                ? 'bg-white text-orange-600'
+                : 'hover:bg-orange-700 text-white'
               }`
             }
           >
@@ -63,10 +81,9 @@ export default function FacultyLayout() {
           <NavLink
             to="take-attendance"
             className={({ isActive }) =>
-              `block px-4 py-2 rounded ${
-                isActive
-                  ? 'bg-white text-orange-600'
-                  : 'hover:bg-orange-700 text-white'
+              `block px-4 py-2 font-light rounded transition-all duration-400 ease-out ${isActive
+                ? 'bg-white text-orange-600'
+                : 'hover:bg-orange-700 text-white'
               }`
             }
           >
@@ -76,10 +93,9 @@ export default function FacultyLayout() {
           <NavLink
             to="timetable"
             className={({ isActive }) =>
-              `block px-4 py-2 rounded ${
-                isActive
-                  ? 'bg-white text-orange-600'
-                  : 'hover:bg-orange-700 text-white'
+              `block px-4 py-2 font-light rounded transition-all duration-400 ease-out ${isActive
+                ? 'bg-white text-orange-600'
+                : 'hover:bg-orange-700 text-white'
               }`
             }
           >
@@ -88,13 +104,13 @@ export default function FacultyLayout() {
         </nav>
 
         {/* Logout */}
-        <div className="px-6 py-4 border-t border-orange-700">
+        <div className="px-6 py-4 border-t border-white rounded mt-auto ">
           <button
             onClick={() => {
               localStorage.clear();
               nav('/');
             }}
-            className="w-full bg-white text-black py-2 rounded hover:bg-gray-100 transition"
+            className="w-full bg-white text-orange-600 py-2 font-light rounded hover:bg-gray-200 transition-all duration-400 ease-out"
           >
             Logout
           </button>

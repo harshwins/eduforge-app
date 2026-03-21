@@ -3,13 +3,13 @@ import React, { useState, useEffect } from 'react';
 import API from '../api';
 
 export default function ManageEvents() {
-  const [events, setEvents]         = useState([]);
-  const [title, setTitle]           = useState('');
+  const [events, setEvents] = useState([]);
+  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [location, setLocation]     = useState('');
-  const [dateTime, setDateTime]     = useState('');      // e.g. "2025-05-10T14:00"
-  const [paid, setPaid]             = useState(false);
-  const [fee, setFee]               = useState('');      // plain text, no spinner
+  const [location, setLocation] = useState('');
+  const [dateTime, setDateTime] = useState('');
+  const [paid, setPaid] = useState(false);
+  const [fee, setFee] = useState('');
 
   const facultyId = parseInt(localStorage.getItem('userId'), 10);
 
@@ -19,10 +19,11 @@ export default function ManageEvents() {
 
   const fetchEvents = async () => {
     try {
-      const { data } = await API.get('http://localhost:8080/api/events');
-      setEvents(data);
+      const { data } = await API.get(`http://localhost:8080/api/events`);
+      setEvents(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to load events', err);
+      setEvents([]);
     }
   };
 
@@ -33,14 +34,23 @@ export default function ManageEvents() {
         title,
         description,
         location,
-        eventDateTime: dateTime,
+        eventDateTime: dateTime, // must be in "YYYY-MM-DDTHH:MM" format
         paid,
-        // assume backend expects fee in paise, so multiply by 100:
-        fee: paid ? parseInt(fee, 10) * 100 : 0,
+        fee: paid ? parseInt(fee, 10) : 0,
         createdByFacultyId: facultyId,
       };
-      await API.post('http://localhost:8080/api/admin/events', payload);
-      // clear form & refresh
+  
+      if (!payload.eventDateTime || isNaN(Date.parse(payload.eventDateTime))) {
+        alert("Please enter a valid date and time.");
+        return;
+      }
+  
+      if (!facultyId) {
+        alert("Invalid faculty ID");
+        return;
+      }
+  
+      await API.post(`http://localhost:8080/api/admin/events`, payload);
       setTitle('');
       setDescription('');
       setLocation('');
@@ -50,9 +60,10 @@ export default function ManageEvents() {
       fetchEvents();
     } catch (err) {
       console.error('Event creation failed', err);
-      alert(`Could not create event: ${err.response?.status || err.message}`);
+      alert(`Could not create event: ${err.response?.data || err.message}`);
     }
   };
+  
 
   const handleDelete = async (id) => {
     if (!window.confirm('Remove this event?')) return;
@@ -144,30 +155,29 @@ export default function ManageEvents() {
             </tr>
           </thead>
           <tbody>
-            {events.map(e => (
-              <tr key={e.id} className="border-t">
-                <td className="p-3">{e.id}</td>
-                <td className="p-3">{e.title}</td>
-                <td className="p-3">
-                  {new Date(e.eventDateTime).toLocaleString()}
-                </td>
-                <td className="p-3">{e.location}</td>
-                <td className="p-3">
-                  {e.paid 
-                    ? `₹${(e.fee / 100).toFixed(2)}` 
-                    : 'Free'}
-                </td>
-                <td className="p-3">
-                  <button
-                    onClick={() => handleDelete(e.id)}
-                    className="text-red-600 hover:underline"
-                  >
-                    Remove
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {events.length === 0 && (
+            {Array.isArray(events) && events.length > 0 ? (
+              events.map(e => (
+                <tr key={e.id} className="border-t">
+                  <td className="p-3">{e.id}</td>
+                  <td className="p-3">{e.title}</td>
+                  <td className="p-3">
+                    {new Date(e.eventDateTime).toLocaleString()}
+                  </td>
+                  <td className="p-3">{e.location}</td>
+                  <td className="p-3">
+                    {e.paid ? `₹${(e.fee / 100).toFixed(2)}` : 'Free'}
+                  </td>
+                  <td className="p-3">
+                    <button
+                      onClick={() => handleDelete(e.id)}
+                      className="text-red-600 hover:underline"
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
               <tr>
                 <td colSpan="6" className="p-3 text-center text-gray-500">
                   No events yet.

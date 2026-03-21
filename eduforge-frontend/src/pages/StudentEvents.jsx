@@ -12,7 +12,7 @@ export default function StudentEvents() {
   const loadData = async () => {
     try {
       const [evRes, regRes] = await Promise.all([
-        API.get('http://localhost:8080/api/events'),
+        API.get(`http://localhost:8080/api/events`),
         API.get(`http://localhost:8080/api/students/${studentId}/registrations`)
       ])
       setEvents(evRes.data)

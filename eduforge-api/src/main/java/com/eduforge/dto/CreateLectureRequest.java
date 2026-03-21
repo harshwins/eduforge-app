@@ -1,43 +1,48 @@
-// src/main/java/com/eduforge/dto/CreateLectureRequest.java
 package com.eduforge.dto;
 
 import java.time.LocalTime;
 
 public class CreateLectureRequest {
-    private String   dayOfWeek;
-    private Integer  slot;
+
+    private String dayOfWeek;
+    private Integer slot;
     private LocalTime startTime;
     private LocalTime endTime;
-    private String   subject;
-    private String   location;
-    private Integer  facultyId;
-    private Integer  batchId;
-    private Integer  semesterId;
+    private String subject;
+    private String location;
+    private Integer facultyId;
+    private Integer batchId;
+    private Integer semesterId;
 
-    public CreateLectureRequest() {
-    }
+    // ---------- NO-ARG CONSTRUCTOR (REQUIRED for JSON) ----------
+
+    public CreateLectureRequest() {}
+
+    // ---------- FULL CONSTRUCTOR ----------
 
     public CreateLectureRequest(
-        String dayOfWeek,
-        Integer slot,
-        LocalTime startTime,
-        LocalTime endTime,
-        String subject,
-        String location,
-        Integer facultyId,
-        Integer batchId,
-        Integer semesterId
+            String dayOfWeek,
+            Integer slot,
+            LocalTime startTime,
+            LocalTime endTime,
+            String subject,
+            String location,
+            Integer facultyId,
+            Integer batchId,
+            Integer semesterId
     ) {
-        this.dayOfWeek  = dayOfWeek;
-        this.slot       = slot;
-        this.startTime  = startTime;
-        this.endTime    = endTime;
-        this.subject    = subject;
-        this.location   = location;
-        this.facultyId  = facultyId;
-        this.batchId    = batchId;
+        this.dayOfWeek = dayOfWeek;
+        this.slot = slot;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.subject = subject;
+        this.location = location;
+        this.facultyId = facultyId;
+        this.batchId = batchId;
         this.semesterId = semesterId;
     }
+
+    // ---------- GETTERS & SETTERS ----------
 
     public String getDayOfWeek() {
         return dayOfWeek;

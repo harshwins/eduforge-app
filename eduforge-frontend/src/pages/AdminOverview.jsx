@@ -15,9 +15,9 @@ export default function AdminOverview() {
     const fetchStats = async () => {
       try {
         const [stuRes, facRes, evtRes] = await Promise.all([
-          API.get('http://localhost:8080/api/admin/students'),
-          API.get('http://localhost:8080/api/admin/faculty'),
-          API.get('http://localhost:8080/api/events'),
+          API.get(`http://localhost:8080/api/admin/students`),
+          API.get(`http://localhost:8080/api/admin/faculty`),
+          API.get(`http://localhost:8080/api/events`),
         ]);
 
         setStudentCount(Array.isArray(stuRes.data) ? stuRes.data.length : 0);

@@ -7,11 +7,17 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "timetable_entries")
 public class TimetableEntry {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    // ---------- DAY ----------
 
     @Column(name = "day_of_week", nullable = false)
     private String dayOfWeek;
+
+    // ---------- SLOT ----------
 
     @Column(nullable = false)
     private Integer slot;
@@ -22,23 +28,46 @@ public class TimetableEntry {
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
 
+    // ---------- LECTURE INFO ----------
+
     @Column(nullable = false)
     private String subject;
 
     @Column(nullable = false)
     private String location;
 
+    // ---------- RELATIONS ----------
+
+    // Faculty who teaches the lecture
+    @ManyToOne
+    @JoinColumn(name = "faculty_id", nullable = false)
+    private User faculty;
+
+    // ⭐ REQUIRED: Faculty who created this entry
     @ManyToOne
     @JoinColumn(name = "created_by_faculty_id", nullable = false)
     private User createdBy;
+
+    // Batch this lecture belongs to
+    @ManyToOne
+    @JoinColumn(name = "batch_id", nullable = false)
+    private Batch batch;
+
+    // Semester
+    @ManyToOne
+    @JoinColumn(name = "semester_id", nullable = false)
+    private Semester semester;
+
+    // ---------- META ----------
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public TimetableEntry() {}
 
+    // ---------- GETTERS / SETTERS ----------
+
     public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
 
     public String getDayOfWeek() { return dayOfWeek; }
     public void setDayOfWeek(String dayOfWeek) { this.dayOfWeek = dayOfWeek; }
@@ -58,9 +87,17 @@ public class TimetableEntry {
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
 
+    public User getFaculty() { return faculty; }
+    public void setFaculty(User faculty) { this.faculty = faculty; }
+
     public User getCreatedBy() { return createdBy; }
     public void setCreatedBy(User createdBy) { this.createdBy = createdBy; }
 
+    public Batch getBatch() { return batch; }
+    public void setBatch(Batch batch) { this.batch = batch; }
+
+    public Semester getSemester() { return semester; }
+    public void setSemester(Semester semester) { this.semester = semester; }
+
     public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

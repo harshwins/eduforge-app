@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: '/api',      // ← this hits Vite’s proxy -> Spring Boot
+  baseURL: 'http://localhost:8080', // backend port with '/api' prefix
   withCredentials: true
 });
 

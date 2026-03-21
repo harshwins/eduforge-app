@@ -1,12 +1,12 @@
-// src/main/java/com/eduforge/controller/AttendanceController.java
 package com.eduforge.controller;
 
 import com.eduforge.model.Attendance;
-import com.eduforge.model.LectureSchedule;
+import com.eduforge.model.TimetableEntry;
 import com.eduforge.model.User;
 import com.eduforge.repository.AttendanceRepository;
-import com.eduforge.repository.LectureScheduleRepository;
+import com.eduforge.repository.TimetableEntryRepository;
 import com.eduforge.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -22,76 +22,99 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 public class AttendanceController {
 
-    private final AttendanceRepository      attendanceRepo;
-    private final UserRepository            userRepo;
-    private final LectureScheduleRepository lectureRepo;
+    private final AttendanceRepository attendanceRepo;
+    private final UserRepository userRepo;
+    private final TimetableEntryRepository timetableRepo;
 
     @Autowired
     public AttendanceController(
-        AttendanceRepository attendanceRepo,
-        UserRepository userRepo,
-        LectureScheduleRepository lectureRepo
+            AttendanceRepository attendanceRepo,
+            UserRepository userRepo,
+            TimetableEntryRepository timetableRepo
     ) {
         this.attendanceRepo = attendanceRepo;
-        this.userRepo       = userRepo;
-        this.lectureRepo    = lectureRepo;
+        this.userRepo = userRepo;
+        this.timetableRepo = timetableRepo;
     }
 
-    // ── FACULTY: LOAD ROSTER FOR A SPECIFIC LECTURE ─────────────────────────────
+    // ─────────────────────────────────────────────
+    // LOAD ROSTER FOR A LECTURE
+    // ─────────────────────────────────────────────
+
     @GetMapping("/faculty/{facultyId}/attendance/{lectureId}/roster")
     public ResponseEntity<List<User>> getClassRoster(
-        @PathVariable Integer facultyId,
-        @PathVariable Integer lectureId
+            @PathVariable Integer facultyId,
+            @PathVariable Integer lectureId
     ) {
+
+        // Check faculty exists
         userRepo.findById(facultyId)
-            .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Faculty not found: " + facultyId));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Faculty not found"));
 
-        LectureSchedule lecture = lectureRepo.findById(lectureId)
-            .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Lecture not found: " + lectureId));
+        // Fetch lecture from timetable_entries
+        TimetableEntry lecture = timetableRepo.findById(lectureId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "TimetableEntry not found: " + lectureId));
 
-        List<User> roster = userRepo.findAllByBatch_Id(lecture.getBatch().getId());
+        // Get students in same batch
+        List<User> roster =
+                userRepo.findAllByBatch_Id(lecture.getBatch().getId());
+
         return ResponseEntity.ok(roster);
     }
 
-    // DTO for incoming attendance records (rename so it’s not Attendance)
+    // ─────────────────────────────────────────────
+    // DTO FOR ATTENDANCE INPUT
+    // ─────────────────────────────────────────────
+
     public static class AttendanceDTO {
         public Integer studentId;
         public boolean present;
     }
 
-    // ── FACULTY: RECORD ATTENDANCE FOR A SPECIFIC LECTURE ─────────────────────
+    // ─────────────────────────────────────────────
+    // SAVE ATTENDANCE
+    // ─────────────────────────────────────────────
+
     @PostMapping("/faculty/{facultyId}/attendance/{lectureId}")
     public ResponseEntity<Void> takeAttendance(
-        @PathVariable Integer facultyId,
-        @PathVariable Integer lectureId,
-        @RequestBody List<AttendanceDTO> records
+            @PathVariable Integer facultyId,
+            @PathVariable Integer lectureId,
+            @RequestBody List<AttendanceDTO> records
     ) {
-        User recorder = userRepo.findById(facultyId)
-            .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Faculty not found: " + facultyId));
 
-        LectureSchedule lecture = lectureRepo.findById(lectureId)
-            .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Lecture not found: " + lectureId));
+        User recorder = userRepo.findById(facultyId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Faculty not found"));
+
+        TimetableEntry lecture = timetableRepo.findById(lectureId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "TimetableEntry not found: " + lectureId));
 
         List<Attendance> toSave = new ArrayList<>();
+
         for (AttendanceDTO dto : records) {
+
             User student = userRepo.findById(dto.studentId)
-                .orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Invalid studentId: " + dto.studentId));
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "Invalid studentId: " + dto.studentId));
 
             Attendance a = new Attendance();
             a.setStudent(student);
-            a.setLecture(lecture);
+            a.setTimetableEntry(lecture);
             a.setDate(LocalDate.now());
             a.setStatus(dto.present ? "Present" : "Absent");
             a.setMarkedBy(recorder);
+
             toSave.add(a);
         }
 
         attendanceRepo.saveAll(toSave);
+
         return ResponseEntity.ok().build();
     }
 }
